@@ -1,0 +1,62 @@
+#!/bin/bash
+
+scroll_start=c
+scroll_end=C
+
+channel_file=/dev/ttyLD0
+
+dump() {
+	# xxd -c 16 <<< "$1" | cut -d' ' -f2
+	echo "$1" | xxd -c 16 | cut -d' ' -f2
+}
+
+notify() {
+	local cycles r reply
+	cycles=$1
+	shift
+	text="$*"
+
+	# \x12 is for manual scrolling, cuz by default short text is not scrolled
+	if [[ $(python <<< "print(len('${text//\'/\\\'}'))") -le 32 ]]; then
+		text=$text$'\x12'
+	fi
+
+	text=$'\n'$text
+
+	# { sleep 0.1s; echo "$@" > "$channel_file"; } &
+	{ sleep 0.1s; echo -ne "$text" > "$channel_file"; } &
+
+	reply=
+	IFS=
+	while ((cycles)); do
+		read -r -N1 r
+		reply=$reply$r # problems with control chars
+
+		# echo "got: '$(dump "$r")' ($(dump "$reply"))"
+		# echo "got: '$r' ($reply)"
+
+		# if [[ $reply == *'\x1b[c' ]]; then
+		# if [[ $reply =~ .*[A-Da-d] ]]; then
+		if ((cycles > 1)); then
+			if [[ $r == "$scroll_start" ]]; then
+				cycles=$((cycles - 1))
+			fi
+		else
+			if [[ $r == "$scroll_end" ]]; then
+				cycles=$((cycles - 1))
+			fi
+		fi
+	done < "$channel_file"
+}
+
+#sync "$channel_file"
+
+cycles=3
+
+# also don't wait indefinitely
+( sleep $((cycles * 13))s; kill -0 $! && kill $! ) &> /dev/null &
+
+# send the message, wait 3 display cycles
+notify 3 "$@"
+# and clear the buffer
+notify 0 ''
