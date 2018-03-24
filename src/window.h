@@ -1,6 +1,10 @@
 #ifndef _WINDOW_H
 #define _WINDOW_H
 
+
+#include "font.h"
+
+
 #define SW_MAX_COUNT 4
 #define SW_LINE_WINDOWS_MAX_COUNT 4
 
@@ -40,7 +44,7 @@ typedef struct {
 	pos_t cursor_x;
 	pos_t cursor_y;
 	// typedef uint8_t font_t;
-	// font_t font;
+	font_t *font;
 	// } console;
 
 	scroll scroll_mode;
@@ -54,7 +58,7 @@ extern sw sw_set[SW_MAX_COUNT + 1];
 extern sw *sw_sorted[SW_MAX_COUNT + 1];
 extern uint8_t sw_counter;
 
-sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll);
+sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll, font_t *font);
 
 void sw_scroll(sw *csw, scroll_buffer position);
 uint8_t sw_scroll_check(sw *csw, scroll_buffer position);

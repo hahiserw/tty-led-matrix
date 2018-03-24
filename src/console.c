@@ -10,8 +10,11 @@
 #include "screen.h" // shouldn't be here I presume
 #include "window.h" // temp, just for sw_sorted
 
+#define FONT_HEIGHT  csw->font->height
+#define FONT_WIDTH   csw->font->width
+
 // #define FONT_SIZE 16
-#define FONT_SIZE 8
+// #define FONT_SIZE 8
 
 // #define CONSOLE_DISCARD_EXCESIVE_CHARACTERS
 
@@ -374,7 +377,7 @@ void draw_letter(sw *csw, uint8_t c) {
 #else
 #ifdef FONT_UTF8
 void draw_letter(sw *csw, uint32_t c) {
-	c = font_map(c);
+	c = csw->font->map(c);
 #else
 void draw_letter(sw *csw, uint8_t c) {
 	if (c < 32)
@@ -390,7 +393,7 @@ void draw_letter(sw *csw, uint8_t c) {
 
 	for (uint8_t y = 0; y < FONT_HEIGHT; y++) {
 		// 2 lines per byte
-		glyph = pgm_read_byte(font + FONT_HEIGHT * c + y);
+		glyph = pgm_read_byte(csw->font->data + FONT_HEIGHT * c + y);
 
 		// fprintf(&uart, "glyph: 0x%02x \r", glyph);
 

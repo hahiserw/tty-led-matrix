@@ -5,6 +5,7 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <string.h>
+#include <avr/pgmspace.h>
 
 #include "usb_serial.h"
 
@@ -13,7 +14,10 @@
 #include "window.h"
 #include "console.h"
 #include "screen.h"
+#include "font.h"
 
+#include "../fonts/5x8.c"
+// #include "../fonts/ter-u16b.c"
 
 uint8_t annoying_dog[16 * 4] = {
 	5,232,0,0,10,20,0,0,8,4,0,0,8,2,0,0,18,67,4,0,16,0,202,0,17,128,58,0,21,32,2,0,19,192,2,0,16,0,2,0,48,0,3,0,64,0,0,128,96,0,1,0,128,0,0,128,64,0,0,64,63,255,255,128
@@ -105,9 +109,11 @@ int main(void)
 
 #define LAYOUT_FULL 0
 #define LAYOUT_SPLIT_VERTICALY 1
+#define LAYOUT_SPLIT_SIDEWAY_T 2
 
 // #define LAYOUT LAYOUT_FULL
 #define LAYOUT LAYOUT_SPLIT_VERTICALY
+// #define LAYOUT LAYOUT_SPLIT_SIDEWAY_T
 
 #if LAYOUT == LAYOUT_FULL
 	sw *csw = sw_new(0, 0,
@@ -120,16 +126,38 @@ int main(void)
 	sw_sorted[0] = sw_new(0, 0,
 					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
 					 DISPLAY_WIDTH * 2, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL);
+					 NO_SCROLL,
+					 &font0);
 
 	sw_sorted[1] = sw_new(0, DISPLAY_HEIGHT / 2,
 					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
 					 DISPLAY_WIDTH * 2, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL);
+					 NO_SCROLL,
+					 &font0);
 
+	sw *csw = sw_sorted[0];
+#elif LAYOUT == LAYOUT_SPLIT_SIDEWAY_T
+	sw_sorted[0] = sw_new(0, 0,
+					 DISPLAY_WIDTH / 4, DISPLAY_HEIGHT,
+					 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT,
+					 NO_SCROLL,
+					 &font1);
+
+	sw_sorted[1] = sw_new(DISPLAY_WIDTH / 4, 0,
+					 DISPLAY_WIDTH * 3 / 4, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 3 / 2, DISPLAY_HEIGHT / 2,
+					 NO_SCROLL,
+					 &font0);
+
+	sw_sorted[2] = sw_new(DISPLAY_WIDTH / 4, DISPLAY_WIDTH / 2,
+					 DISPLAY_WIDTH * 3 / 4, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 3 / 2, DISPLAY_HEIGHT / 2,
+					 NO_SCROLL,
+					 &font0);
 	sw *csw = sw_sorted[0];
 #endif
 
+	// add static assertion?
 	if (csw == NULL)
 		die();
 

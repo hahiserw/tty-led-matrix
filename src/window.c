@@ -37,6 +37,8 @@
 #include "main.h"
 #include "window.h"
 #include "console.h"
+#include "font.h"
+
 
 // 2.5KB RAM
 
@@ -87,7 +89,8 @@ sw *sw_sorted[SW_MAX_COUNT + 1];
 sw *sw_new(upos_t x, upos_t y,
 		   upos_t width, upos_t height,
 		   upos_t buffer_width, upos_t buffer_height,
-		   scroll scroll_mode)
+		   scroll scroll_mode,
+		   font_t *font)
 {
 	if (sw_counter + 1 >= SW_MAX_COUNT)
 		return NULL;
@@ -113,6 +116,7 @@ sw *sw_new(upos_t x, upos_t y,
 	nsw->cursor_y      = 0;
 
 	nsw->scroll_mode   = scroll_mode;
+	nsw->font          = font;
 
 	// nope...
 	// nsw->buffer = main_buffer + sw_counter * buffer_width * buffer_height / 8;
@@ -124,6 +128,7 @@ sw *sw_new(upos_t x, upos_t y,
 	else
 		nsw->buffer = main_buffer;
 
+	// xxx needs to be ceil div
 	nsw->buffer_end = nsw->buffer + buffer_width * buffer_height / 8;
 
 	sw_counter++;
