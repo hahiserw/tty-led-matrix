@@ -13,3 +13,4 @@
 - [ ] blinking cursor?
 - [X] scroll to buffer-pre on new message (if it exceeds screen width)
 - [ ] respond with available escape sequences when incorrect one was received?
+- [ ] different configurations of windows to switch between (changable by some escape sequence) during runtime
