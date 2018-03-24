@@ -17,9 +17,9 @@ notify() {
 	text="$*"
 
 	# \x12 is for manual scrolling, cuz by default short text is not scrolled
-	if [[ $(python <<< "print(len('${text//\'/\\\'}'))") -le 32 ]]; then
-		text=$text$'\x12'
-	fi
+	# if [[ $(python <<< "print(len('${text//\'/\\\'}'))") -le 32 ]]; then
+	# 	text=$text$'\x12'
+	# fi
 
 	text=$'\n'$text
 
@@ -54,7 +54,8 @@ notify() {
 cycles=3
 
 # also don't wait indefinitely
-( sleep $((cycles * 13))s; kill -0 $! && kill $! ) &> /dev/null &
+#( sleep $((cycles * 13))s; kill -0 $! && kill $! ) &> /dev/null &
+( sleep $((cycles * 13))s; kill -0 $$ && kill $$ ) &> /dev/null &
 
 # send the message, wait 3 display cycles
 notify 3 "$@"
