@@ -233,7 +233,7 @@ void parse_letter(sw *csw, uint8_t c) {
 	case KEY_CTRL('N'):
 		fprintf(&uart, "windows: %i\r\n", sw_counter);
 		FOREACH_WINDOW(w, i) {
-			fprintf(&uart, "%i: %ix%i+%i+%i",
+			fprintf(&uart, "%2i: %ix%i+%i+%i\r\n",
 					i, w->width, w->height, w->x, w->y);
 			// xxx for some reason breaks, even with zeros
 			// fprintf(&uart, " %ix%i (%i)\r\n",
