@@ -230,26 +230,18 @@ void parse_letter(sw *csw, uint8_t c) {
 		counter = 0;
 		break;
 
-		// XXX FIXME
-	case KEY_CTRL('N'): {
-		int in = 0;
-		// in = snprintf(info, INFO_LENGTH, "windows: %i\r\n", sw_counter);
-		in = snprintf(info, INFO_LENGTH, "windows: \r\n");
-		// fprintf(&uart, "windows: %i\r\n", sw_counter);
-// #define NICE_INFO
-#ifdef NICE_INFO
-		FOREACH_WINDOW(cw, csw_s) {
-			// fprintf(&uart, "%i: %ix%i+%i+%i\r\n",
-			in = snprintf(&info[in], INFO_LENGTH, "%2i: %4ix%4i\r\n",
-					 csw_s,
-					 cw->width, cw->height//, csw->x, csw->y
-					 // csw->buffer_width, csw->buffer_height,
-					 // csw->buffer_end - csw->buffer
-					);
+	case KEY_CTRL('N'):
+		fprintf(&uart, "windows: %i\r\n", sw_counter);
+		FOREACH_WINDOW(w, i) {
+			fprintf(&uart, "%i: %ix%i+%i+%i",
+					i, w->width, w->height, w->x, w->y);
+			// xxx for some reason breaks, even with zeros
+			// fprintf(&uart, " %ix%i (%i)\r\n",
+			// 		0, 0, 0
+			// 		 // w->buffer_width, w->buffer_height,
+			// 		 // w->buffer_end - w->buffer
+			// 	   );
 		}
-#endif
-		fprintf(&uart, info);
-	}
 		break;
 
 	// case KEY_CTRL('K'):
