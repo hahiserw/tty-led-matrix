@@ -1,229 +1,122 @@
 #include <stdint.h>
 #include <avr/pgmspace.h>
 
-uint32_t font_map16(uint32_t code) {
-	if (code == 0)
-		return code - 0 + 0;
-	if (code >= 32 && code <= 126)
-		return code - 32 + 1;
-	if (code >= 160 && code <= 373)
-		return code - 160 + 96;
-	if (code >= 376 && code <= 383)
-		return code - 376 + 310;
-	if (code == 390)
-		return code - 390 + 318;
-	if (code >= 398 && code <= 400)
-		return code - 398 + 319;
-	if (code == 402)
-		return code - 402 + 322;
-	if (code >= 413 && code <= 414)
-		return code - 413 + 323;
-	if (code == 439)
-		return code - 439 + 325;
-	if (code >= 536 && code <= 539)
-		return code - 536 + 326;
-	if (code >= 562 && code <= 563)
-		return code - 562 + 330;
-	if (code == 567)
-		return code - 567 + 332;
-	if (code == 596)
-		return code - 596 + 333;
-	if (code >= 600 && code <= 601)
-		return code - 600 + 334;
-	if (code == 603)
-		return code - 603 + 336;
-	if (code == 626)
-		return code - 626 + 337;
-	if (code == 658)
-		return code - 658 + 338;
-	if (code >= 699 && code <= 701)
-		return code - 699 + 339;
-	if (code >= 710 && code <= 711)
-		return code - 710 + 342;
-	if (code >= 728 && code <= 729)
-		return code - 728 + 344;
-	if (code >= 731 && code <= 733)
-		return code - 731 + 346;
-	if (code >= 768 && code <= 771)
-		return code - 768 + 349;
-	if (code == 774)
-		return code - 774 + 353;
-	if (code == 780)
-		return code - 780 + 354;
-	if (code == 809)
-		return code - 809 + 355;
-	if (code >= 900 && code <= 906)
-		return code - 900 + 356;
-	if (code == 908)
-		return code - 908 + 363;
-	if (code >= 910 && code <= 929)
-		return code - 910 + 364;
-	if (code >= 931 && code <= 974)
-		return code - 931 + 384;
-	if (code >= 1011 && code <= 1012)
-		return code - 1011 + 428;
-	if (code >= 1024 && code <= 1119)
-		return code - 1024 + 430;
-	if (code >= 1168 && code <= 1181)
-		return code - 1168 + 526;
-	if (code >= 1184 && code <= 1189)
-		return code - 1184 + 540;
-	if (code >= 1194 && code <= 1195)
-		return code - 1194 + 546;
-	if (code >= 1198 && code <= 1203)
-		return code - 1198 + 548;
-	if (code >= 1206 && code <= 1211)
-		return code - 1206 + 554;
-	if (code >= 1232 && code <= 1247)
-		return code - 1232 + 560;
-	if (code >= 1250 && code <= 1269)
-		return code - 1250 + 576;
-	if (code >= 1272 && code <= 1273)
-		return code - 1272 + 596;
-	if (code >= 7732 && code <= 7733)
-		return code - 7732 + 598;
-	if (code >= 7864 && code <= 7865)
-		return code - 7864 + 600;
-	if (code >= 7868 && code <= 7869)
-		return code - 7868 + 602;
-	if (code >= 7882 && code <= 7885)
-		return code - 7882 + 604;
-	if (code >= 7908 && code <= 7909)
-		return code - 7908 + 608;
-	if (code >= 7928 && code <= 7929)
-		return code - 7928 + 610;
-	if (code >= 8192 && code <= 8202)
-		return code - 8192 + 612;
-	if (code >= 8208 && code <= 8226)
-		return code - 8208 + 623;
-	if (code == 8230)
-		return code - 8230 + 642;
-	if (code == 8240)
-		return code - 8240 + 643;
-	if (code >= 8242 && code <= 8243)
-		return code - 8242 + 644;
-	if (code >= 8249 && code <= 8250)
-		return code - 8249 + 646;
-	if (code == 8252)
-		return code - 8252 + 648;
-	if (code == 8254)
-		return code - 8254 + 649;
-	if (code == 8319)
-		return code - 8319 + 650;
-	if (code == 8359)
-		return code - 8359 + 651;
-	if (code == 8364)
-		return code - 8364 + 652;
-	if (code == 8366)
-		return code - 8366 + 653;
-	if (code >= 8462 && code <= 8463)
-		return code - 8462 + 654;
-	if (code == 8470)
-		return code - 8470 + 656;
-	if (code == 8482)
-		return code - 8482 + 657;
-	if (code == 8486)
-		return code - 8486 + 658;
-	if (code >= 8592 && code <= 8597)
-		return code - 8592 + 659;
-	if (code == 8616)
-		return code - 8616 + 665;
-	if (code == 8629)
-		return code - 8629 + 666;
-	if (code >= 8656 && code <= 8661)
-		return code - 8656 + 667;
-	if (code == 8707)
-		return code - 8707 + 673;
-	if (code >= 8709 && code <= 8710)
-		return code - 8709 + 674;
-	if (code == 8712)
-		return code - 8712 + 676;
-	if (code == 8714)
-		return code - 8714 + 677;
-	if (code == 8722)
-		return code - 8722 + 678;
-	if (code >= 8729 && code <= 8730)
-		return code - 8729 + 679;
-	if (code >= 8734 && code <= 8735)
-		return code - 8734 + 681;
-	if (code >= 8743 && code <= 8746)
-		return code - 8743 + 683;
-	if (code == 8776)
-		return code - 8776 + 687;
-	if (code >= 8800 && code <= 8801)
-		return code - 8800 + 688;
-	if (code >= 8804 && code <= 8805)
-		return code - 8804 + 690;
-	if (code == 8960)
-		return code - 8960 + 692;
-	if (code == 8962)
-		return code - 8962 + 693;
-	if (code == 8976)
-		return code - 8976 + 694;
-	if (code >= 8992 && code <= 8993)
-		return code - 8992 + 695;
-	if (code >= 9146 && code <= 9149)
-		return code - 9146 + 697;
-	if (code >= 9225 && code <= 9229)
-		return code - 9225 + 701;
-	if (code == 9252)
-		return code - 9252 + 706;
-	if (code >= 9472 && code <= 9475)
-		return code - 9472 + 707;
-	if (code >= 9480 && code <= 9547)
-		return code - 9480 + 711;
-	if (code >= 9552 && code <= 9584)
-		return code - 9552 + 779;
-	if (code >= 9588 && code <= 9619)
-		return code - 9588 + 812;
-	if (code >= 9622 && code <= 9632)
-		return code - 9622 + 844;
-	if (code == 9644)
-		return code - 9644 + 855;
-	if (code == 9646)
-		return code - 9646 + 856;
-	if (code == 9650)
-		return code - 9650 + 857;
-	if (code == 9654)
-		return code - 9654 + 858;
-	if (code == 9660)
-		return code - 9660 + 859;
-	if (code == 9664)
-		return code - 9664 + 860;
-	if (code == 9670)
-		return code - 9670 + 861;
-	if (code >= 9674 && code <= 9675)
-		return code - 9674 + 862;
-	if (code == 9679)
-		return code - 9679 + 864;
-	if (code >= 9688 && code <= 9689)
-		return code - 9688 + 865;
-	if (code >= 9786 && code <= 9788)
-		return code - 9786 + 867;
-	if (code == 9792)
-		return code - 9792 + 870;
-	if (code == 9794)
-		return code - 9794 + 871;
-	if (code == 9824)
-		return code - 9824 + 872;
-	if (code == 9827)
-		return code - 9827 + 873;
-	if (code >= 9829 && code <= 9830)
-		return code - 9829 + 874;
-	if (code >= 9834 && code <= 9835)
-		return code - 9834 + 876;
-	if (code >= 10003 && code <= 10004)
-		return code - 10003 + 878;
-	if (code >= 10007 && code <= 10008)
-		return code - 10007 + 880;
-	if (code >= 57504 && code <= 57506)
-		return code - 57504 + 882;
-	if (code >= 57520 && code <= 57523)
-		return code - 57520 + 885;
-	if (code == 63166)
-		return code - 63166 + 889;
-	return 890;
-}
+#include "font.h"
+
+// elements: 111
+const map_t font_map16[111] PROGMEM = {
+	{     0,     0,     0 },
+	{    32,   126,     1 },
+	{   160,   373,    96 },
+	{   376,   383,   310 },
+	{   390,   390,   318 },
+	{   398,   400,   319 },
+	{   402,   402,   322 },
+	{   413,   414,   323 },
+	{   439,   439,   325 },
+	{   536,   539,   326 },
+	{   562,   563,   330 },
+	{   567,   567,   332 },
+	{   596,   596,   333 },
+	{   600,   601,   334 },
+	{   603,   603,   336 },
+	{   626,   626,   337 },
+	{   658,   658,   338 },
+	{   699,   701,   339 },
+	{   710,   711,   342 },
+	{   728,   729,   344 },
+	{   731,   733,   346 },
+	{   768,   771,   349 },
+	{   774,   774,   353 },
+	{   780,   780,   354 },
+	{   809,   809,   355 },
+	{   900,   906,   356 },
+	{   908,   908,   363 },
+	{   910,   929,   364 },
+	{   931,   974,   384 },
+	{  1011,  1012,   428 },
+	{  1024,  1119,   430 },
+	{  1168,  1181,   526 },
+	{  1184,  1189,   540 },
+	{  1194,  1195,   546 },
+	{  1198,  1203,   548 },
+	{  1206,  1211,   554 },
+	{  1232,  1247,   560 },
+	{  1250,  1269,   576 },
+	{  1272,  1273,   596 },
+	{  7732,  7733,   598 },
+	{  7864,  7865,   600 },
+	{  7868,  7869,   602 },
+	{  7882,  7885,   604 },
+	{  7908,  7909,   608 },
+	{  7928,  7929,   610 },
+	{  8192,  8202,   612 },
+	{  8208,  8226,   623 },
+	{  8230,  8230,   642 },
+	{  8240,  8240,   643 },
+	{  8242,  8243,   644 },
+	{  8249,  8250,   646 },
+	{  8252,  8252,   648 },
+	{  8254,  8254,   649 },
+	{  8319,  8319,   650 },
+	{  8359,  8359,   651 },
+	{  8364,  8364,   652 },
+	{  8366,  8366,   653 },
+	{  8462,  8463,   654 },
+	{  8470,  8470,   656 },
+	{  8482,  8482,   657 },
+	{  8486,  8486,   658 },
+	{  8592,  8597,   659 },
+	{  8616,  8616,   665 },
+	{  8629,  8629,   666 },
+	{  8656,  8661,   667 },
+	{  8707,  8707,   673 },
+	{  8709,  8710,   674 },
+	{  8712,  8712,   676 },
+	{  8714,  8714,   677 },
+	{  8722,  8722,   678 },
+	{  8729,  8730,   679 },
+	{  8734,  8735,   681 },
+	{  8743,  8746,   683 },
+	{  8776,  8776,   687 },
+	{  8800,  8801,   688 },
+	{  8804,  8805,   690 },
+	{  8960,  8960,   692 },
+	{  8962,  8962,   693 },
+	{  8976,  8976,   694 },
+	{  8992,  8993,   695 },
+	{  9146,  9149,   697 },
+	{  9225,  9229,   701 },
+	{  9252,  9252,   706 },
+	{  9472,  9475,   707 },
+	{  9480,  9547,   711 },
+	{  9552,  9584,   779 },
+	{  9588,  9619,   812 },
+	{  9622,  9632,   844 },
+	{  9644,  9644,   855 },
+	{  9646,  9646,   856 },
+	{  9650,  9650,   857 },
+	{  9654,  9654,   858 },
+	{  9660,  9660,   859 },
+	{  9664,  9664,   860 },
+	{  9670,  9670,   861 },
+	{  9674,  9675,   862 },
+	{  9679,  9679,   864 },
+	{  9688,  9689,   865 },
+	{  9786,  9788,   867 },
+	{  9792,  9792,   870 },
+	{  9794,  9794,   871 },
+	{  9824,  9824,   872 },
+	{  9827,  9827,   873 },
+	{  9829,  9830,   874 },
+	{  9834,  9835,   876 },
+	{ 10003, 10004,   878 },
+	{ 10007, 10008,   880 },
+	{ 57504, 57506,   882 },
+	{ 57520, 57523,   885 },
+	{ 63166, 63166,   889 },
+	{     0, 65535,   890 },
+};
 
 const uint8_t font_data16[] PROGMEM = {
 // File generated by 'bdfe -n -s 0--1 font.bdf'
@@ -1128,4 +1021,4 @@ const uint8_t font_data16[] PROGMEM = {
 	0x00,0x00,0xFE,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xFE,0x00,0x00,0x00,0x00, // 65533
 };
 
-FONT_CONFIG(8, 16, font_map16, font_data16)
+FONT_CONFIG(8, 16, 111, font_map16, font_data16)

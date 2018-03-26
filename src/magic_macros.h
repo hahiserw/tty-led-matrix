@@ -1,5 +1,5 @@
-#ifndef _MAGIC_H
-#define _MAGIC_H
+#ifndef _MAGIC_MACROS_H
+#define _MAGIC_MACROS_H
 
 // https://github.com/pfultz2/Cloak/wiki/C-Preprocessor-tricks,-tips,-and-idioms
 // https://github.com/18sg/uSHET/blob/master/lib/cpp_magic.h

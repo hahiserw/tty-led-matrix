@@ -49,6 +49,7 @@ TARGET = main
         screen.c \
         usb_serial.c \
         window.c \
+        font.c \
         console.c
 
 

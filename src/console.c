@@ -9,6 +9,7 @@
 #include "console.h"
 #include "screen.h" // shouldn't be here I presume
 #include "window.h" // temp, just for sw_sorted
+#include "font.h" // font_map
 
 #define FONT_HEIGHT  csw->font->height
 #define FONT_WIDTH   csw->font->width
@@ -376,7 +377,7 @@ void draw_letter(sw *csw, uint8_t c) {
 #else
 #ifdef FONT_UTF8
 void draw_letter(sw *csw, uint32_t c) {
-	c = csw->font->map(c);
+	c = font_map(csw->font, c);
 #else
 void draw_letter(sw *csw, uint8_t c) {
 	if (c < 32)
