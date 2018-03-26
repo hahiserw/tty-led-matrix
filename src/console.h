@@ -1,20 +1,17 @@
 #ifndef _CONSOLE_H
 #define _CONSOLE_H
 
+
 #include "window.h"
 
 
 #define CONSOLE_TAB_SIZE 8
 
 #define KEY_CTRL(v) \
-	((v < 'a')? \
-	(v - 'A' + 0x01): \
-	(v - 'a' + 0x01))
+	(((v) < 'a')? \
+	((v) - 'A' + 0x01): \
+	((v) - 'a' + 0x01))
 
-
-// enum {
-// 	FONT_4,
-// };
 
 void parse_letter(sw *csw, uint8_t c);
 void parse_new_line(sw *csw);
