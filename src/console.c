@@ -192,7 +192,7 @@ void parse_letter(sw *csw, uint8_t c) {
 		break;
 
 	case KEY_CTRL('Q'):
-		fprintf(&uart, "disabling OE, safe to reprogram\r\n");
+		// fprintf(&uart, "disabling OE, safe to reprogram\r\n");
 		die();
 		break;
 		// // fixme restart µc and go into bootloader
@@ -226,7 +226,7 @@ void parse_letter(sw *csw, uint8_t c) {
 		else
 			counter_overflow = (counter_overflow - 1) & 0x1f;
 
-		fprintf(&uart, "counter overflow: %i  \r", counter_overflow);
+		fprintf(&uart, "speed: %i  \r", counter_overflow);
 		counter = 0;
 		break;
 
@@ -253,6 +253,13 @@ void parse_letter(sw *csw, uint8_t c) {
 	case KEY_CTRL('U'):
 		if (c == KEY_CTRL('U'))
 			csw->offset_x = 0;
+
+		fprintf(&uart, "ox: %4i  <: %2i  -: %2i  >: %2i \r",
+				csw->offset_x,
+				space_pre,
+				space_in,
+				space_post
+				);
 
 		// fprintf(&uart, "ox: %4i  pre: %2i  in: %2i  post: %2i  xm: %2d  d: 0x%02x \r",
 		// 		csw->offset_x,
