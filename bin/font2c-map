@@ -1,1 +1,120 @@
-/home/hahi/bin/font2c-map
+#!/usr/bin/env python3
+
+''' write conditions to map char codes to font indexes
+0
+32
+33
+34
+35
+160
+161
+162
+65535
+
+would become
+
+if (code == 0)
+    return 0;
+if (code >= 32 && code <= 35)
+    return code - 31; // 32 + 1; // from + 1
+if (code >= 160 && code <= 162)
+    return code - 165; // 160 + 1 + 35 - 32 + 1; // from + 
+return code - 65543; // 65535 + 5 + 3;
+'''
+
+templates = [
+        {
+            'name':     '// elements: {}\n' \
+                    'uint32_t {}(uint32_t code) {{\n',
+            'range_eq': '\tif (code == {})\n',
+            'range':    '\tif (code >= {} && code <= {})\n',
+            'gap':      '\t\treturn code - {} + {};\n',
+            'last_gap': '\treturn {};\n',
+            'end':      '}\n',
+            'no_range': '\tif (code >= {} && code <= {})\n' \
+                    '\t\treturn code;\n' \
+                    '\telse\n' \
+                    '\t\treturn {};\n',
+            },
+        {
+            'name':     '// elements: {}\n' \
+                    'const map_t {}[{}] PROGMEM = {{\n',
+            'range_eq': '\t{{ {:>5}, {:>5}, ',
+            'range':    '\t{{ {:>5}, {:>5}, ',
+            'gap':      '{:>5} }},\n',
+            'last_gap': '\t{{     0, 65535, {:>5} }},\n',
+            'end':      '};\n',
+            'no_range': '\t// only one range: {} .. {}\n' \
+                    '\t{{     0, 65535, {:>5} }},\n',
+            },
+        ]
+
+from sys import argv, exit
+
+if len(argv) < 2:
+    print('usage: {} name charcodes_file'.format(argv[0]))
+    exit(1)
+
+mode = 1
+template = templates[mode]
+
+with open(argv[2], 'r') as f:
+    codes = [int(x) for x in f.read().split()]
+
+    # find ranges
+    last_code = codes[0]
+    last_index = 0
+    ranges = []
+
+    for index in range(len(codes) - 1):
+        code      = codes[index]
+        next_code = codes[index + 1]
+
+        if code + 1 == next_code:
+            continue
+
+        ranges.append((last_code, code, index + 1))
+
+        last_code = next_code
+        last_index = index
+
+    # print(codes)
+    # print(ranges)
+    range_elements = len(ranges) + 1
+
+    output = template['name'].format(range_elements, argv[1], range_elements)
+    output_ranges = ''
+    output_mappings = ''
+
+    last_index_from = 0
+
+    for index in range(len(ranges)):
+        range_from, range_to, index_from = ranges[index]
+
+        o = ''
+
+        if range_from == range_to:
+            o += template['range_eq'].format(range_from, range_to)
+        else:
+            o += template['range'].format(range_from, range_to)
+
+        o += template['gap'].format(last_index_from, range_from)
+
+        if range_from == range_to:
+            output_mappings += o
+        else:
+            output_ranges += o
+
+        output += o
+
+        last_index_from = index_from
+
+    if len(ranges):
+        output += template['last_gap'].format(last_index_from)
+    else:
+        output += template['no_range'].format(codes[0], codes[-1], codes[0])
+
+    output += template['end']
+
+
+    print(output)

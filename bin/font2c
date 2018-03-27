@@ -1,1 +1,81 @@
-/home/hahi/bin/font2c
+#!/bin/bash
+
+bdfe=$HOME/Projects/bdfe/bdfe
+
+path=${1?Specify pcf or bdf file path}
+path_out=${2?Specify output file path}
+ext=${path##*.}
+all=${3+-a}
+name=${path##*/}
+name=${name%%.*}
+# dimensions=${name%%-*}
+#name=font-${name%%.*}.c
+
+if [[ -d $path_out ]]; then
+	name=$path_out/$name.c
+else
+	name=$path_out
+fi
+
+# width=${dimensions%%x*}
+# width=${width//[[:alpha:]]/}
+# height=${dimensions##*x}
+# height=${height//[[:alpha:]]/}
+
+# temp=$(mktemp)
+temp=/tmp/font
+
+if ! [[ -e $path ]]; then
+	echo "No such file"
+	exit 1
+fi
+
+if [[ $ext == pcf ]] || [[ ${path#*.} == pcf.gz ]]; then
+	cat "$path" > "$temp.pcf"
+	if [[ -e $temp.pcf ]]; then
+		pcf2bdf "$temp.pcf" -o "$temp.bdf"
+	fi
+fi
+
+if [[ $ext == bdf ]]; then
+	cat "$path" > "$temp.bdf"
+fi
+
+font_data=$("$bdfe" -h -v -l "$all" -n "$temp.bdf")
+
+if [[ -z $font_data ]]; then
+	echo "bdfe is unable to process this font ;_;"
+	exit 1
+fi
+
+
+# shellcheck disable=SC2034
+read -r statement width height ox oy < <(grep FONTBOUNDINGBOX "$temp.bdf")
+
+font_name=font_data$height
+map_name=font_map$height
+
+awk '/^ENCODING/ {print $2}' "$temp.bdf" > "$temp.indexes"
+font_map_fn=$(font2c-map "$map_name" "$temp.indexes")
+map_elements=$(grep elements <<< "$font_map_fn")
+map_elements=${map_elements##*: }
+
+
+cat > "$name" << EOF
+#include <stdint.h>
+#include <avr/pgmspace.h>
+
+#include "font.h"
+
+$font_map_fn
+
+const uint8_t $font_name[] PROGMEM = {
+$font_data
+};
+
+FONT_CONFIG($width, $height, $map_elements, $map_name, $font_name)
+EOF
+
+echo "Font written to $name"
+
+# rm -f "$temp" "$temp.pcf" "$temp.bdf"
