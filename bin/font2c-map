@@ -38,8 +38,8 @@ templates = [
             },
         {
             'name':     '// elements: {}\n' \
-                    'const map_t {}[{}] PROGMEM = {{\n',
-            'range_eq': '\t{{ {:>5}, {:>5}, ',
+                    'const map{}_t {}_{}[{}] PROGMEM = {{\n',
+            'range_eq': '\t{{ {:>5}, ',
             'range':    '\t{{ {:>5}, {:>5}, ',
             'gap':      '{:>5} }},\n',
             'last_gap': '\t{{     0, 65535, {:>5} }},\n',
@@ -80,11 +80,13 @@ with open(argv[2], 'r') as f:
 
     # print(codes)
     # print(ranges)
-    range_elements = len(ranges) + 1
+    # range_elements = len(ranges) + 1
+    # output = template['name'].format(range_elements, argv[1], range_elements)
 
-    output = template['name'].format(range_elements, argv[1], range_elements)
-    output_ranges = ''
-    output_mappings = ''
+    elements_mappings = 0
+    elements_ranges   = 0
+    output_ranges     = ''
+    output_mappings   = ''
 
     last_index_from = 0
 
@@ -102,19 +104,37 @@ with open(argv[2], 'r') as f:
 
         if range_from == range_to:
             output_mappings += o
+            elements_mappings += 1
         else:
             output_ranges += o
+            elements_ranges += 1
 
-        output += o
+        # output += o
 
         last_index_from = index_from
 
-    if len(ranges):
-        output += template['last_gap'].format(last_index_from)
-    else:
-        output += template['no_range'].format(codes[0], codes[-1], codes[0])
+    output_ranges = \
+        template['name'].format(elements_ranges, 3, argv[1], 3, elements_ranges) \
+        + output_ranges
 
-    output += template['end']
+    if elements_ranges:
+        output_ranges += template['last_gap'].format(last_index_from)
+        elements_ranges += 1
 
+    output_ranges += template['end']
 
-    print(output)
+    output_mappings = \
+        template['name'].format(elements_mappings, 2, argv[1], 2, elements_mappings) \
+        + output_mappings \
+        + template['end']
+
+    # if len(ranges):
+    #     output += template['last_gap'].format(last_index_from)
+    # else:
+    #     output += template['no_range'].format(codes[0], codes[-1], codes[0])
+
+    # output += template['end']
+
+    # print(output)
+
+    print(output_ranges + '\n' + output_mappings)

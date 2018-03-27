@@ -57,8 +57,10 @@ map_name=font_map$height
 
 awk '/^ENCODING/ {print $2}' "$temp.bdf" > "$temp.indexes"
 font_map_fn=$(font2c-map "$map_name" "$temp.indexes")
-map_elements=$(grep elements <<< "$font_map_fn")
-map_elements=${map_elements##*: }
+map_elements_ranges=$(grep elements: <<< "$font_map_fn" | head -1)
+map_elements_ranges=${map_elements_ranges##*: }
+map_elements_mappings=$(grep elements: <<< "$font_map_fn" | tail -1 | head -1)
+map_elements_mappings=${map_elements_mappings##*: }
 
 
 cat > "$name" << EOF
@@ -73,7 +75,7 @@ const uint8_t $font_name[] PROGMEM = {
 $font_data
 };
 
-FONT_CONFIG($width, $height, $map_elements, $map_name, $font_name)
+FONT_CONFIG($width, $height, $map_elements_ranges, ${map_name}_3, $map_elements_mappings, ${map_name}_2, $font_name)
 EOF
 
 echo "Font written to $name"

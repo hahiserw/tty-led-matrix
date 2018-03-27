@@ -13,7 +13,12 @@ typedef struct {
 	map_cell_t range_from;
 	map_cell_t range_to;
 	map_cell_t offset;
-} map_t;
+} map3_t;
+
+typedef struct {
+	map_cell_t range_from;
+	map_cell_t offset;
+} map2_t;
 
 
 struct _font_t;
@@ -21,8 +26,12 @@ struct _font_t;
 struct _font_t {
 	uint8_t width;
 	uint8_t height;
-	uint16_t map_elements;
-	const map_t *map;
+
+	map_cell_t map3_elements;
+	const map3_t *map3;
+	map_cell_t map2_elements;
+	const map2_t *map2;
+
 	const uint8_t *data;
 	struct _font_t *next;
 };
