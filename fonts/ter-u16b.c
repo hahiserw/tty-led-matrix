@@ -3,8 +3,8 @@
 
 #include "font.h"
 
-// elements: 62
-const map3_t font_map16_3[62] PROGMEM = {
+// elements: 63
+const map3_t font_map16_3[63] PROGMEM = {
 	{    32,   126,     1 },
 	{   160,   373,    96 },
 	{   376,   383,   310 },
@@ -1025,4 +1025,4 @@ const uint8_t font_data16[] PROGMEM = {
 	0x00,0x00,0xFE,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xC6,0xFE,0x00,0x00,0x00,0x00, // 65533
 };
 
-FONT_CONFIG(8, 16, 62, font_map16_3, 48, font_map16_2, font_data16)
+FONT_CONFIG(8, 16, 63, font_map16_3, 48, font_map16_2, font_data16)

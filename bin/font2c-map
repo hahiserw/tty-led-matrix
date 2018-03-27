@@ -113,13 +113,13 @@ with open(argv[2], 'r') as f:
 
         last_index_from = index_from
 
+    elements_ranges += 1
+
     output_ranges = \
         template['name'].format(elements_ranges, 3, argv[1], 3, elements_ranges) \
         + output_ranges
 
-    if elements_ranges:
-        output_ranges += template['last_gap'].format(last_index_from)
-        elements_ranges += 1
+    output_ranges += template['last_gap'].format(last_index_from)
 
     output_ranges += template['end']
 

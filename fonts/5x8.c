@@ -3,8 +3,8 @@
 
 #include "font.h"
 
-// elements: 95
-const map3_t font_map8_3[95] PROGMEM = {
+// elements: 96
+const map3_t font_map8_3[96] PROGMEM = {
 	{    32,   126,     1 },
 	{   160,   383,    96 },
 	{   416,   417,   322 },
@@ -1577,4 +1577,4 @@ const uint8_t font_data8[] PROGMEM = {
 	0x70,0xD8,0xA8,0xE8,0xD8,0xF8,0xD8,0x70, // 65533
 };
 
-FONT_CONFIG(5, 8, 95, font_map8_3, 33, font_map8_2, font_data8)
+FONT_CONFIG(5, 8, 96, font_map8_3, 33, font_map8_2, font_data8)
