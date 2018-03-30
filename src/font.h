@@ -6,18 +6,11 @@
 #include "magic_macros.h"
 
 
-// typedef uint32_t map_cell_t;
 typedef uint16_t map_cell_t;
 
 typedef struct {
-	map_cell_t range_from;
-	map_cell_t range_to;
-	map_cell_t offset;
-} map3_t;
-
-typedef struct {
-	map_cell_t range_from;
-	map_cell_t offset;
+	map_cell_t start_code;
+	map_cell_t count;
 } map2_t;
 
 
@@ -27,10 +20,9 @@ struct _font_t {
 	uint8_t width;
 	uint8_t height;
 
-	map_cell_t map3_elements;
-	const map3_t *map3;
-	map_cell_t map2_elements;
-	const map2_t *map2;
+	map_cell_t index_invalid_char;
+	map_cell_t map_elements;
+	const map2_t *map;
 
 	const uint8_t *data;
 	struct _font_t *next;

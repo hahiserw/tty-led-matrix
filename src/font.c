@@ -2,39 +2,63 @@
 
 #include "font.h"
 
+/* examples for
+ * {     0,     1 },
+ * {    32,    95 },
+ * {   160,   224 },
+ * {   399,     1 },
+ * {   402,     1 },
+ * {   416,     2 },
+ * {   431,     2 },
+ *
+ * code == 417
+ * 417 < 0 + 1
+ * 417 < 32 + 95
+ * 417 < 160 + 224
+ * 417 < 399 + 1
+ * 417 < 402 + 1
+ * 417 < 416 + 2
+ * 417 >= 416
+ * return 417 - 416 + (1 + 95 + 224 + 1 + 1 + 2)
+ *
+ * code == 5
+ * 5 < 0 + 1
+ * 5 < 32 + 95
+ * 5 >= 32
+ * return offset to invalid char
+ */
 
+/**
+ * @description font index lookup function
+ * @param font_t *font  pointer to the font
+ * @param map_cell_t code  character's code number
+ * @return map_cell_t  start index of glyph's data
+ */
 map_cell_t font_map(font_t *font, map_cell_t code)
 {
-	map_cell_t i;
+	map_cell_t i = font->map_elements - 1;
+	const map2_t *cm = &font->map[0];
 
-	i = font->map3_elements - 1;
-	const map3_t *cm3 = &font->map3[0];
-
-	while (i--) {
-		map_cell_t rf = pgm_read_word(&cm3->range_from);
-		map_cell_t rt = pgm_read_word(&cm3->range_to);
-
-		// first check the ending range so the failing second condition
-		// wouldn't have to be checked as well
-		if (code <= rt && code >= rf)
-			return code + pgm_read_word(&cm3->offset) - rf;
-
-		cm3++;
-	}
-
-	i = font->map2_elements - 1;
-	const map2_t *cm2 = &font->map2[0];
+	map_cell_t offset = 0;
 
 	while (i--) {
-		map_cell_t rf = pgm_read_word(&cm2->range_from);
+		map_cell_t start_code = pgm_read_word(&cm->start_code);
+		map_cell_t count      = pgm_read_word(&cm->count);
 
-		if (code == rf)
-			return code + pgm_read_word(&cm2->offset) - rf;
+		// will fail only one check each non matching code
+		if (code < start_code + count) {
+			if (code >= start_code)
+				return code - start_code + offset;
+			else
+				goto font_search_end;
+		}
 
-		cm2++;
+		offset += count;
+		cm++;
 	}
 
-	return font->map3[font->map3_elements - 1].offset;
+font_search_end:
+	return font->index_invalid_char;
 }
 
 // uint8_t fonts_count(void)

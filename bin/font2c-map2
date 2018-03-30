@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+''' output an array of structs to map char codes to font indexes
+0
+32
+33
+34
+35
+160
+161
+162
+65535
+
+would become
+
+{     0, 1 },
+{    32, 4 },
+{   160, 3 },
+{ 65535, 1 },
+'''
+
+templates = [
+        {
+            # 'pre' is for the caller script
+            'pre':     '// invalid character index: {}\n',
+            'name':    'const map2_t {}[{}] PROGMEM = {{\n',
+            'element': '\t{{ {:>5}, {:>5} }},\n',
+            'end':     '};\n',
+            },
+        ]
+
+from sys import argv, exit
+
+if len(argv) < 2:
+    print('usage: {} name charcodes_file [index of invalid character]'
+            .format(argv[0]))
+    print('Invalid character is a symbol that will be shown when given')
+    print('character code is not found in the font.')
+    print('Pass -1 for the last one. By default 65533 is choosen.')
+    print('If there is no character at specified index space (32) is choosen')
+    exit(1)
+
+mode     = 0
+template = templates[mode]
+
+invalid_char_code = int(argv[3]) if len(argv) > 3 else 65533
+
+with open(argv[2], 'r') as f:
+    codes = [int(x) for x in f.read().split()]
+
+    # find ranges
+    invalid_char_ok = False
+    space_index     = -1
+    last_code       = codes[0]
+    last_index      = 0
+    elements        = []
+    offset          = 0
+
+    for index in range(len(codes) - 1):
+        code      = codes[index]
+        next_code = codes[index + 1]
+
+        if code + 1 == next_code:
+            continue
+
+        elements.append((last_code, code - last_code + 1))
+
+        if space_index == -1:
+            if 32 < code + 1 and 32 >= last_code:
+                space_index = 32 - last_code + offset
+
+        if not invalid_char_ok and invalid_char_code != -1:
+            if invalid_char_code < code + 1 and invalid_char_code >= last_code:
+                invalid_char_ok   = True
+                invalid_char_code = invalid_char_code - last_code + offset
+
+        offset += code - last_code + 1
+
+        last_code  = next_code
+        last_index = index
+
+    elements.append((last_code, 1)) # hmm
+    elements_count = len(elements)
+
+    if not invalid_char_ok and invalid_char_code != -1:
+        if invalid_char_code < last_code + 1 and invalid_char_code >= last_code:
+            invalid_char_ok   = True
+            invalid_char_code = invalid_char_code - last_code + offset
+
+    if invalid_char_code == -1:
+        invalid_char_code = offset
+
+    if not invalid_char_ok:
+        invalid_char_code = space_index
+
+    output = ''
+
+    output += template['pre'].format(invalid_char_code)
+    output += template['name'].format(argv[1], elements_count)
+
+    # mmmm
+    output += ''.join([template['element'].format(*e) for e in elements])
+
+    output += template['end']
+
+    print(output)
