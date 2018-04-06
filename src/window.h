@@ -5,8 +5,11 @@
 #include "font.h"
 
 
-#define SW_MAX_COUNT 4
+#define SW_MAX_COUNT 6
 #define SW_LINE_WINDOWS_MAX_COUNT 4
+
+#define WINDOW_NEXT_MAX 10
+
 
 // syn keyword Type pos_t upos_t scroll scroll_buffer
 
@@ -26,7 +29,9 @@ typedef enum {
 	SCROLL_BUFFER_PRE_START,
 } scroll_buffer; // todo rename to scroll_position?
 
-typedef struct {
+struct _sw;
+typedef struct _sw sw;
+struct _sw {
 	// screen
 	upos_t x;
 	upos_t y;
@@ -38,6 +43,7 @@ typedef struct {
 	upos_t buffer_height;
 	pos_t offset_x;
 	pos_t offset_y;
+	sw **next; // following windows (on screen)
 
 	// todo put into console struct
 	// typedef struct {
@@ -51,14 +57,17 @@ typedef struct {
 
 	uint8_t *buffer;
 	uint8_t *buffer_end;
-} sw;
+};
 
 
-extern sw sw_set[SW_MAX_COUNT + 1];
-extern sw *sw_sorted[SW_MAX_COUNT + 1];
+extern sw sw_set[SW_MAX_COUNT];
+extern sw *sw_sorted[SW_MAX_COUNT];
 extern uint8_t sw_counter;
 
+extern sw *sw_next[10];
+
 sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll, font_t *font);
+int8_t sw_build_next_window_table(void);
 
 void sw_scroll(sw *csw, scroll_buffer position);
 uint8_t sw_scroll_check(sw *csw, scroll_buffer position);
@@ -66,6 +75,23 @@ void sw_scroll_tick(void);
 
 sw *sw_get_by_y(upos_t y);
 
+static inline sw *get_next_window(sw *csw, upos_t y)
+{
+	sw *nsw = *csw->next;
+
+	for (uint8_t i = 0; i < WINDOW_NEXT_MAX; i++) {
+		if (!nsw)
+			break;
+
+		// better to check ending range first - less comparisons
+		if (y < nsw->y + nsw->height && y >= nsw->y)
+			return nsw;
+
+		nsw++;
+	}
+
+	return NULL;
+}
 
 // #define NEW_FOREACH
 
@@ -84,6 +110,17 @@ sw *sw_get_by_y(upos_t y);
 			 iter++) \
 
 #endif
+
+#define IN_RANGE(v, a, b) \
+	((v) >= (a) && (v) <= (b))
+
+#define WINDOWS_HORIZONTALY_TANGENT(csw, dsw) \
+	( \
+	 (IN_RANGE(csw->y, dsw->y, dsw->y + dsw->height) \
+	  && IN_RANGE(dsw->y + dsw->height, csw->y, csw->y + csw->height)) \
+	  || \
+	  (IN_RANGE(dsw->y, csw->y, csw->y + csw->height) \
+	   && IN_RANGE(csw->y + csw->height, dsw->y, dsw->y + dsw->height)))
 
 
 #endif

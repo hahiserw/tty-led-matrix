@@ -79,8 +79,8 @@ void sw_display(void) {
 #endif
 
 uint8_t sw_counter;
-sw sw_set[SW_MAX_COUNT + 1]; // the last one should be null, so foreach would work
-sw *sw_sorted[SW_MAX_COUNT + 1];
+sw sw_set[SW_MAX_COUNT];
+sw *sw_sorted[SW_MAX_COUNT];
 
 // void sw_clear(sw *csw)
 // {
@@ -142,6 +142,60 @@ void sw_del(sw *dsw)
 	dsw->width = 0;
 }
 
+
+// global for debugging
+sw *sw_next[WINDOW_NEXT_MAX];
+
+// build pointer table by iterating over previous windows and checking if
+// they're tanget
+int8_t sw_build_next_window_table(void)
+{
+	// static sw *sw_next[WINDOW_NEXT_MAX];
+	// static sw sw_next[SW_MAX_COUNT][SW_LINE_WINDOWS_MAX_COUNT];
+
+	sw **n = sw_next;
+
+	// find tangent windows set window's next pointers table
+	//  ----              ----
+	// |    |----    ----|    |
+	// | cw |    |  |    | dw |
+	//  ----| dw |  | cw |    |
+	// |    |----    ---------
+	// |    |
+	//  ----
+	FOREACH_WINDOW(csw, cswi) {
+		csw->next = n;
+
+		FOREACH_WINDOW(dsw, dswi) {
+			// no need to check root_window here
+			// nor same window with itself
+			if (dsw == root_window || csw == dsw)
+				continue;
+
+			// special case
+			// if window begins at x == 0 and is just inside root_window
+			if (csw == root_window && dsw->x == 0)
+				;
+			else
+				// if not tangent horizontaly
+				if (dsw->x != csw->x + csw->width)
+					continue;
+
+			if (WINDOWS_HORIZONTALY_TANGENT(csw, dsw)) {
+				if ((n - sw_next < WINDOW_NEXT_MAX))
+					*n++ = dsw;
+				else
+					return -1;
+			}
+		}
+
+		*n++ = NULL;
+	}
+
+	return n - sw_next;
+}
+
+// x macros?
 void sw_scroll(sw *csw, scroll_buffer position)
 {
 	switch (position) {

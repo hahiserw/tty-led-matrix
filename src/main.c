@@ -19,13 +19,9 @@
 #include "../fonts/5x8.c"
 // #include "../fonts/ter-u16b.c"
 
-uint8_t annoying_dog[16 * 4] = {
-	5,232,0,0,10,20,0,0,8,4,0,0,8,2,0,0,18,67,4,0,16,0,202,0,17,128,58,0,21,32,2,0,19,192,2,0,16,0,2,0,48,0,3,0,64,0,0,128,96,0,1,0,128,0,0,128,64,0,0,64,63,255,255,128
-};
-
 // 2 out of 2.5KB on atmega32u4
 uint8_t main_buffer[2048] = {0};
-uint8_t main_window = 0;
+uint8_t main_window = 1;
 
 #if 0
 void scroll(void) {
@@ -103,17 +99,27 @@ void hardware_init(void) {
 }
 
 
+sw *root_window;
+
 int main(void)
 {
 	hardware_init();
+
+	root_window = sw_new(0, 0,
+						 DISPLAY_WIDTH, DISPLAY_HEIGHT,
+						 0, 0,
+						 NO_SCROLL,
+						 &font0);
+
+	root_window->next = sw_next;
 
 #define LAYOUT_FULL 0
 #define LAYOUT_SPLIT_VERTICALY 1
 #define LAYOUT_SPLIT_SIDEWAY_T 2
 
 // #define LAYOUT LAYOUT_FULL
-#define LAYOUT LAYOUT_SPLIT_VERTICALY
-// #define LAYOUT LAYOUT_SPLIT_SIDEWAY_T
+// #define LAYOUT LAYOUT_SPLIT_VERTICALY
+#define LAYOUT LAYOUT_SPLIT_SIDEWAY_T
 
 #if LAYOUT == LAYOUT_FULL
 	sw *csw = sw_new(0, 0,
@@ -125,35 +131,37 @@ int main(void)
 #elif LAYOUT == LAYOUT_SPLIT_VERTICALY
 	sw_sorted[0] = sw_new(0, 0,
 					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 2, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4, DISPLAY_HEIGHT / 2,
 					 NO_SCROLL,
 					 &font0);
 
 	sw_sorted[1] = sw_new(0, DISPLAY_HEIGHT / 2,
 					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 2, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4, DISPLAY_HEIGHT / 2,
 					 NO_SCROLL,
 					 &font0);
 
 	sw *csw = sw_sorted[0];
 #elif LAYOUT == LAYOUT_SPLIT_SIDEWAY_T
 	sw_sorted[0] = sw_new(0, 0,
-					 DISPLAY_WIDTH / 4, DISPLAY_HEIGHT,
-					 DISPLAY_WIDTH / 2, DISPLAY_HEIGHT,
+					 DISPLAY_WIDTH / 8, DISPLAY_HEIGHT,
+					 DISPLAY_WIDTH * 4 / 8, DISPLAY_HEIGHT,
 					 NO_SCROLL,
-					 &font1);
+					 // &font1);
+					 &font0);
 
-	sw_sorted[1] = sw_new(DISPLAY_WIDTH / 4, 0,
-					 DISPLAY_WIDTH * 3 / 4, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 3 / 2, DISPLAY_HEIGHT / 2,
+	sw_sorted[1] = sw_new(DISPLAY_WIDTH * 1 / 8, 0,
+					 DISPLAY_WIDTH * 7 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4 * 7 / 8, DISPLAY_HEIGHT / 2,
 					 NO_SCROLL,
 					 &font0);
 
-	sw_sorted[2] = sw_new(DISPLAY_WIDTH / 4, DISPLAY_WIDTH / 2,
-					 DISPLAY_WIDTH * 3 / 4, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 3 / 2, DISPLAY_HEIGHT / 2,
+	sw_sorted[2] = sw_new(DISPLAY_WIDTH * 1 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 7 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4 * 7 / 8, DISPLAY_HEIGHT / 2,
 					 NO_SCROLL,
 					 &font0);
+
 	sw *csw = sw_sorted[0];
 #endif
 
@@ -161,12 +169,18 @@ int main(void)
 	if (csw == NULL)
 		die();
 
+	// create pointer table for scan function to know what (from which window)
+	// data to output next
+	if (sw_build_next_window_table() < 0)
+		die();
+
 	// sw_scroll(csw, SCROLL_BUFFER_START); // show data immediately
 
 // #define FONT_TEST
 // #define WELCOME_TEXT
 // #define BARK
-#define VERT_TEST
+// #define VERT_TEST
+#define VERT_T_TEST
 
 #ifdef WELCOME_TEXT
 	uint8_t *m = (uint8_t *)
@@ -195,6 +209,10 @@ int main(void)
 #endif
 
 #ifdef BARK
+	static uint8_t annoying_dog[16 * 4] = {
+		5,232,0,0,10,20,0,0,8,4,0,0,8,2,0,0,18,67,4,0,16,0,202,0,17,128,58,0,21,32,2,0,19,192,2,0,16,0,2,0,48,0,3,0,64,0,0,128,96,0,1,0,128,0,0,128,64,0,0,64,63,255,255,128
+	};
+
 	for (uint8_t i = 0; i < 16; i++)
 		memcpy(&buffer2d(csw, i, 0), &annoying_dog[4 * i], 4);
 #endif
@@ -208,6 +226,12 @@ int main(void)
 	// sw_sorted[1]->scroll_mode = SCROLL_LEFT;
 	sw_sorted[1]->scroll_mode = SCROLL_RIGHT;
 #endif
+#endif
+
+#ifdef VERT_T_TEST
+	draw_text(sw_sorted[0], ":D");
+	draw_text(sw_sorted[1], "„Zakaz wędzonej kiełbasy mnie rozjusza”");
+	draw_text(sw_sorted[2], "-- Wojciech Cejrowski");
 #endif
 
 	usb_init();

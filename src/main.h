@@ -69,6 +69,7 @@
 
 extern uint8_t main_buffer[];
 extern FILE uart;
+extern sw *root_window;
 
 extern uint8_t main_window;
 

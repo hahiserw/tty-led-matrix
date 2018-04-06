@@ -208,8 +208,24 @@ void parse_letter(sw *csw, uint8_t c) {
 		// 	;
 		// break;
 
+	case KEY_CTRL('F'):
+		for (uint8_t i = 0; i < sw_counter; i++)
+			fprintf(&uart, "w: %6p\r\n", &sw_set[i]);
+
+		// for (uint8_t i = 0; i < 4; i++)
+		// 	fprintf(&uart, "s: %6p\r\n", sw_sorted[i]);
+
+		for (uint8_t i = 0; i < 10; i++)
+			fprintf(&uart, "n: %6p\r\n", sw_next[i]);
+		fprintf(&uart, "\r\n");
+		break;
+
 	case KEY_CTRL('O'):
-		main_window = (main_window + 1) % sw_counter;
+		// skip root window
+		if (main_window + 1 < sw_counter)
+			main_window++;
+		else
+			main_window = 1;
 		break;
 
 		// toggle scrolling (and delay)
