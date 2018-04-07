@@ -55,7 +55,7 @@ static inline void sub_scan(sw *csw, upos_t y)
 
 	upos_t width        = csw->width;
 	upos_t buffer_width = csw->buffer_width;
-	upos_t offset_x     = csw->offset_x;
+	pos_t offset_x      = csw->offset_x;
 
 	// if (csw->scroll_mode != NO_SCROLL #<{(| offset_x_changed()|)}>#) {
 	if (1) {
@@ -102,7 +102,7 @@ static inline void sub_scan(sw *csw, upos_t y)
 
 	}
 
-	if (csw->offset_x > 0)
+	if (offset_x > 0)
 		d = dy + offset_x / 8;
 	else
 		d = dy;
