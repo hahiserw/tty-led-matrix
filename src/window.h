@@ -73,8 +73,6 @@ void sw_scroll(sw *csw, scroll_buffer position);
 uint8_t sw_scroll_check(sw *csw, scroll_buffer position);
 void sw_scroll_tick(void);
 
-sw *sw_get_by_y(upos_t y);
-
 static inline sw *get_next_window(sw *csw, upos_t y)
 {
 	sw *nsw = *csw->next;

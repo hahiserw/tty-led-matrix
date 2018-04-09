@@ -328,17 +328,3 @@ inline void sw_scroll_tick(void)
 		}
 	}
 }
-
-inline sw *sw_get_by_y(upos_t y)
-{
-	FOREACH_WINDOW(csw, c) {
-		if (y >= csw->y && y < csw->y + csw->height)
-			// for (uint8_t j = 0; j < SW_LINE_WINDOWS_MAX_COUNT; j++)
-			// 	if (x >= csw->x && x <= csw->x + csw->width)
-			// 	and call it every pixel lol?
-			return csw;
-	}
-
-	return NULL;
-}
-
