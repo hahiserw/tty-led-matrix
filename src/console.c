@@ -268,30 +268,21 @@ void parse_letter(sw *csw, uint8_t c) {
 	case KEY_CTRL('S'):
 	case KEY_CTRL('T'):
 	case KEY_CTRL('U'):
-		if (c == KEY_CTRL('U'))
-			csw->offset_x = 0;
-
-		fprintf(&uart, "ox: %4i  <: %2i  -: %2i  >: %2i \r",
+	case KEY_CTRL('D'):
+		fprintf(&uart, "( %4i, %4i )  <: %2i  -: %2i  >: %2i \r",
 				csw->offset_x,
+				csw->offset_y,
 				space_pre,
 				space_in,
 				space_post
 				);
 
-		// fprintf(&uart, "ox: %4i  pre: %2i  in: %2i  post: %2i  xm: %2d  d: 0x%02x \r",
-		// 		csw->offset_x,
-		// 		space_pre,
-		// 		space_in,
-		// 		space_post,
-		// 		xm,
-		// 		// ((*csw->buffer << xm) | (*(csw->buffer+1) >> (8 - xm))) & 0xff
-		// 		0
-		// 		);
-
-		if (c == KEY_CTRL('S'))
-			csw->scroll_mode = SCROLL_LEFT;
-		else if (c == KEY_CTRL('T'))
-			csw->scroll_mode = SCROLL_RIGHT;
+		switch (c) {
+		case KEY_CTRL('S'): csw->scroll_mode = SCROLL_LEFT;  break;
+		case KEY_CTRL('T'): csw->scroll_mode = SCROLL_RIGHT; break;
+		case KEY_CTRL('U'): csw->scroll_mode = SCROLL_UP;    break;
+		case KEY_CTRL('D'): csw->scroll_mode = SCROLL_DOWN;  break;
+		}
 
 		sw_scroll_tick();
 		csw->scroll_mode = NO_SCROLL;
