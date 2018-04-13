@@ -230,10 +230,9 @@ void parse_letter(sw *csw, uint8_t c) {
 
 		// toggle scrolling (and delay)
 	case KEY_CTRL('R'):
-		csw->scroll_mode = csw->scroll_mode == NO_SCROLL?
-			SCROLL_LEFT: NO_SCROLL;
-		if (csw->scroll_mode == NO_SCROLL)
-			sw_scroll(csw, SCROLL_BUFFER_START);
+		sw_scroll(csw, SCROLL_BUFFER_START);
+		sw_scroll(csw, SCROLL_BUFFER_START_VERT);
+		csw->scroll_mode = (csw->scroll_mode + 1) % 5;
 		break;
 
 	case KEY_CTRL('W'):

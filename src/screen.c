@@ -48,12 +48,23 @@ uint16_t space_in;
 uint16_t space_post;
 uint8_t xm;
 
-static inline void sub_scan(sw *csw, upos_t y)
+static inline void sub_scan(sw *csw, upos_t gy)
 {
-	uint8_t *dy = &buffer2d(csw, csw->offset_y + y - csw->y, 0);
+	pos_t offset_y = csw->offset_y;
+	upos_t width   = csw->width;
+	upos_t height  = csw->height;
+	upos_t y       = csw->y;
+
+	if (gy + offset_y - y < 0 || gy + offset_y - y >= height) {
+		for (uint8_t s = 0; s < width / 8; s++)
+			spi_write(0);
+
+		return;
+	}
+
+	uint8_t *dy = &buffer2d(csw, gy + offset_y - y, 0);
 	uint8_t *d;
 
-	upos_t width        = csw->width;
 	upos_t buffer_width = csw->buffer_width;
 	pos_t offset_x      = csw->offset_x;
 
@@ -99,7 +110,6 @@ static inline void sub_scan(sw *csw, upos_t y)
 			space_in   = width / 8 - space_pre;
 			space_post = 0;
 		}
-
 	}
 
 	if (offset_x > 0)

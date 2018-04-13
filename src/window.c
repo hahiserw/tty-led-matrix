@@ -196,129 +196,115 @@ int8_t sw_build_next_window_table(void)
 }
 
 // x macros?
-void sw_scroll(sw *csw, scroll_buffer position)
+inline void sw_scroll(sw *csw, scroll_buffer position)
 {
 	switch (position) {
-	case SCROLL_BUFFER_START:
-#ifdef NEW_SPICY_SCROLLING
-		csw->offset_x = 0;
-#else
-		csw->offset_x = csw->buffer_width + csw->width;
-#endif
-		break;
-
 	case SCROLL_BUFFER_PRE_START:
-#ifdef NEW_SPICY_SCROLLING
 		csw->offset_x = -csw->width;
-#else
-		csw->offset_x = csw->buffer_width;
-#endif
+		break;
+
+	case SCROLL_BUFFER_PRE_START_VERT:
+		csw->offset_y = -(csw->cursor_y + csw->font->height);
+		break;
+
+	case SCROLL_BUFFER_DATA_END:
+		csw->offset_x = csw->cursor_x;
+		break;
+
+	case SCROLL_BUFFER_DATA_END_VERT:
+		csw->offset_y = csw->cursor_y + csw->font->height;
+		break;
+
+	case SCROLL_BUFFER_START:
+		csw->offset_x = 0;
+		break;
+
+	case SCROLL_BUFFER_START_VERT:
+		csw->offset_y = 0;
 		break;
 	}
 }
 
-uint8_t sw_scroll_check(sw *csw, scroll_buffer position)
+#if 0
+// todo emit escape sequences when on certain offsets
+int8_t sw_scroll_check(sw *csw, scroll_buffer position)
 {
 	switch (position) {
+	case SCROLL_BUFFER_START_VERT:
+	case SCROLL_BUFFER_PRE_START_VERT:
+	case SCROLL_BUFFER_DATA_END_VERT:
+		return 0;
+
 	case SCROLL_BUFFER_START:
-#ifdef NEW_SPICY_SCROLLING
 		return csw->offset_x == 0;
-#else
-		return csw->offset_x == csw->buffer_width + csw->width;
-#endif
 
 	case SCROLL_BUFFER_PRE_START:
-#ifdef NEW_SPICY_SCROLLING
 		return csw->offset_x == -csw->width;
-#else
-		return csw->offset_x == csw->buffer_width;
-#endif
+
+	case SCROLL_BUFFER_DATA_END:
+		return csw->offset_x == csw->cursor_x;
 	}
 
-	return 0; // or 255 or sth?
+	return -1; // XXX
 }
+// #endif
 
 
-#define SCROLL_UPDATE(csw, check, axis, change) \
+#define SCROLL_UPDATE(csw, check, axis, change, end_scroll) \
 	if (check) { \
 		csw->offset_ ## axis += change; \
-		if (sw_scroll_check(csw, SCROLL_BUFFER_START)) \
-			console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_START); \
+		/* if (sw_scroll_check(csw, SCROLL_BUFFER_START)) \
+			console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_START); */ \
 	} else { \
-		sw_scroll(csw, SCROLL_BUFFER_PRE_START); \
-		console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_END); \
+		sw_scroll(csw, end_scroll); \
+		/* console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_END); */ \
 	}
+#endif
+
+#define SCROLL_UPDATE(csw, offset, check, change, end_scroll) \
+	if (!(csw->offset check)) \
+		sw_scroll(csw, end_scroll); \
+	csw->offset change;
 
 inline void sw_scroll_tick(void)
 {
+	// these are written so there's one empty frame after the end of
+	// scrolling cycle
 	FOREACH_WINDOW(csw, c) {
-		// if (csw->buffer == NULL) // means it's not active?
-		// 	continue;
-
 		switch (csw->scroll_mode) {
 		case NO_SCROLL:
-			break;
+			continue;
 
 		case SCROLL_LEFT:
 			SCROLL_UPDATE(csw,
-						  csw->offset_x + 1 < csw->cursor_x,
-						  // || csw->offset_ ## axis < csw->buffer_width)
-						  x,
-						  1);
+						  offset_x,
+						  < csw->cursor_x,
+						  ++,
+						  SCROLL_BUFFER_PRE_START);
 			break;
 
 		case SCROLL_RIGHT:
 			SCROLL_UPDATE(csw,
-						  csw->offset_x - 1 > -csw->width,
-						  x,
-						  -1);
-		
-			break;
-
-		case SCROLL_LEFT + 10:
-#ifdef NEW_SPICY_SCROLLING
-			if (csw->offset_x + 1 < csw->cursor_x) { // || < csw->buffer_width for safety
-				// if (csw->offset_x < csw->cursor_x) // should be this
-				csw->offset_x++;
-
-				if (sw_scroll_check(csw, SCROLL_BUFFER_START))
-					console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_START);
-			} else {
-				sw_scroll(csw, SCROLL_BUFFER_PRE_START);
-				console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_END);
-			}
-#else
-			// XXX breaks if cursor_x / FONT_WIDTH > 96
-			if (csw->offset_x < csw->buffer_width + csw->width + csw->cursor_x) {
-				csw->offset_x++; // % some_width?
-				// csw->offset_x = (csw->offset_x + 1) % 2048; // % some_width?
-
-				if (sw_scroll_check(csw, SCROLL_BUFFER_START))
-					// XXX about 30 cycles late?
-					console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_START);
-			} else {
-				// csw->offset_x = csw->buffer_width;
-				sw_scroll(csw, SCROLL_BUFFER_PRE_START);
-
-				// shouldn't be here?
-				console_write(CONSOLE_SCROLLING_RIGHT_CYCLE_END);
-				
-				// automatically clear the screen after 3 cycles have passed?
-			}
-#endif
-			break;
-
-		case SCROLL_RIGHT + 10:
-			csw->offset_x = (csw->offset_x - 1) % (csw->buffer_width * 2);
-			// csw->offset_x = (csw->offset_x - 1) % (csw->cursor_x * 2);
+						  offset_x,
+						  > -(pos_t)csw->width,
+						  --,
+						  SCROLL_BUFFER_DATA_END);
 			break;
 
 		case SCROLL_UP:
-			csw->offset_y = (csw->offset_y + 1) % (csw->buffer_height * 2);
+			SCROLL_UPDATE(csw,
+						  offset_y,
+						  < csw->cursor_y + csw->font->height,
+						  ++,
+						  SCROLL_BUFFER_PRE_START_VERT);
 			break;
 
 		case SCROLL_DOWN:
-			csw->offset_y = (csw->offset_y - 1) % (csw->buffer_height * 2);
+			SCROLL_UPDATE(csw,
+						  offset_y,
+						  > -(csw->cursor_y + csw->font->height),
+						  --,
+						  SCROLL_BUFFER_DATA_END_VERT);
 			break;
 
 			// for animated images?

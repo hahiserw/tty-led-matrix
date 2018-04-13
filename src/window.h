@@ -27,6 +27,10 @@ typedef enum {
 typedef enum {
 	SCROLL_BUFFER_START,
 	SCROLL_BUFFER_PRE_START,
+	SCROLL_BUFFER_DATA_END,
+	SCROLL_BUFFER_START_VERT,
+	SCROLL_BUFFER_PRE_START_VERT,
+	SCROLL_BUFFER_DATA_END_VERT,
 } scroll_buffer; // todo rename to scroll_position?
 
 struct _sw;
@@ -70,7 +74,7 @@ sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll, font_t *font)
 int8_t sw_build_next_window_table(void);
 
 void sw_scroll(sw *csw, scroll_buffer position);
-uint8_t sw_scroll_check(sw *csw, scroll_buffer position);
+// int8_t sw_scroll_check(sw *csw, scroll_buffer position);
 void sw_scroll_tick(void);
 
 static inline sw *get_next_window(sw *csw, upos_t y)

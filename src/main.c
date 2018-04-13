@@ -151,14 +151,20 @@ int main(void)
 					 &font0);
 
 	sw_sorted[1] = sw_new(DISPLAY_WIDTH * 1 / 8, 0,
-					 DISPLAY_WIDTH * 7 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4 * 7 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 6 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4 * 6 / 8, DISPLAY_HEIGHT / 2,
 					 NO_SCROLL,
 					 &font0);
 
 	sw_sorted[2] = sw_new(DISPLAY_WIDTH * 1 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 7 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4 * 7 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 6 / 8, DISPLAY_HEIGHT / 2,
+					 DISPLAY_WIDTH * 4 * 6 / 8, DISPLAY_HEIGHT / 2,
+					 NO_SCROLL,
+					 &font0);
+
+	sw_sorted[3] = sw_new(DISPLAY_WIDTH * 7 / 8, 0,
+					 DISPLAY_WIDTH / 8, DISPLAY_HEIGHT,
+					 DISPLAY_WIDTH * 4 / 8, DISPLAY_HEIGHT,
 					 NO_SCROLL,
 					 &font0);
 
@@ -229,9 +235,13 @@ int main(void)
 #endif
 
 #ifdef VERT_T_TEST
-	draw_text(sw_sorted[0], ":D");
+	draw_text(sw_sorted[0], ":D\n:D");
 	draw_text(sw_sorted[1], "„Zakaz wędzonej kiełbasy mnie rozjusza”");
 	draw_text(sw_sorted[2], "-- Wojciech Cejrowski");
+	draw_text(sw_sorted[3], ":D\n:D");
+	// sw_sorted[2]->scroll_mode = SCROLL_RIGHT;
+	// sw_sorted[0]->scroll_mode = SCROLL_DOWN;
+	// sw_sorted[3]->scroll_mode = SCROLL_UP;
 #endif
 
 	usb_init();
