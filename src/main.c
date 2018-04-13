@@ -116,10 +116,27 @@ int main(void)
 #define LAYOUT_FULL 0
 #define LAYOUT_SPLIT_VERTICALY 1
 #define LAYOUT_SPLIT_SIDEWAY_T 2
+#define LAYOUT_MEM 3
 
 // #define LAYOUT LAYOUT_FULL
 // #define LAYOUT LAYOUT_SPLIT_VERTICALY
 #define LAYOUT LAYOUT_SPLIT_SIDEWAY_T
+// #define LAYOUT LAYOUT_MEM
+
+#if LAYOUT == LAYOUT_MEM
+	sw *csw = sw_new(0, 0,
+					 DISPLAY_WIDTH, DISPLAY_HEIGHT,
+					 DISPLAY_WIDTH, DISPLAY_HEIGHT,
+					 NO_SCROLL,
+					 &font0);
+	sw_sorted[0] = csw;
+
+	// 0x0000..0x001f 32 registers
+	// 0x0020..0x005f I/O registers
+	// 0x0060..0x00ff ext I/O registers
+	// 0x0100..0x0aff internal sram
+	sw_sorted[0]->buffer = *(uint8_t *)0x0000;
+#endif
 
 #if LAYOUT == LAYOUT_FULL
 	sw *csw = sw_new(0, 0,
