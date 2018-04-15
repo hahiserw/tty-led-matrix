@@ -96,7 +96,6 @@ static inline void sub_scan(sw *csw, upos_t gy)
 				space_post = 0;
 			}
 
-			// XXX FIXME last byte is being drawn improperly
 			space_in = width / 8 - space_post;
 		} else {
 			// ox < 0
@@ -127,7 +126,10 @@ static inline void sub_scan(sw *csw, upos_t gy)
 			d++;
 		}
 
-		spi_write(*d << xm);
+		if (offset_y > buffer_width - width)
+			spi_write(*d << xm);
+		else
+			spi_write((*d << xm) | (*(d+1) >> (8 - xm)));
 	} else {
 		spi_write(*d >> (8 - xm));
 
