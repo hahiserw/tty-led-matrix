@@ -80,13 +80,10 @@ void parse_new_line(sw *csw) {
 // typedef enum { PARSE_CHARACTER, PARSE_UNICODE, PARSE_IMAGE } parse;
 // parse parse_mode = PARSE_CHARACTER;
 
-#define INFO_LENGTH 100
-char info[INFO_LENGTH];
-
-uint8_t wcbytes = 0;
-uint32_t wc = 0;
-
 void parse_letter(sw *csw, uint8_t c) {
+	static uint8_t wcbytes;
+	static uint32_t wc;
+
 	// unicode parsing
 	if (c >= 0x80) {
 		if (c >= 0xf0) {
@@ -268,13 +265,13 @@ void parse_letter(sw *csw, uint8_t c) {
 	case KEY_CTRL('T'):
 	case KEY_CTRL('U'):
 	case KEY_CTRL('D'):
-		fprintf(&uart, "( %4i, %4i )  <: %2i  -: %2i  >: %2i \r",
+		fprintf(&uart, "( %4i, %4i )  < %3i, %3i, %3i > \r",
 				csw->offset_x,
 				csw->offset_y,
 				space_pre,
 				space_in,
 				space_post
-				);
+			   );
 
 		switch (c) {
 		case KEY_CTRL('S'): csw->scroll_mode = SCROLL_LEFT;  break;
