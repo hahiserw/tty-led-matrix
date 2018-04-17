@@ -126,7 +126,7 @@ static inline void sub_scan(sw *csw, upos_t gy)
 			d++;
 		}
 
-		if (offset_y > buffer_width - width)
+		if (offset_x > buffer_width - width)
 			spi_write(*d << xm);
 		else
 			spi_write((*d << xm) | (*(d+1) >> (8 - xm)));
