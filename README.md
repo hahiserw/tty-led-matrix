@@ -1,7 +1,7 @@
 ## Features
 - unicode (see the font in console.c for all available glyphs)
 - multiple scrolling windows displayed simultanuously
-- handling of escape sequences (not yet; in progress)
+- handling of escape sequences (in progress)
 - drawing images with base64 (not yet)
 
 ### TODO
@@ -14,3 +14,6 @@
 - [X] scroll to buffer-pre on new message (if it exceeds screen width)
 - [ ] respond with available escape sequences when incorrect one was received?
 - [ ] different configurations of windows to switch between (changable by some escape sequence) during runtime
+
+- [ ] text buffer, so screen doesn't blink on receiving
+- [ ] display buffere repeatedly, so there's no blank screen at any time
