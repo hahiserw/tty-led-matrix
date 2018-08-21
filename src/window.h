@@ -11,6 +11,10 @@
 #define WINDOW_NEXT_MAX 10
 
 
+#define FLAG_REPORT_OVERFLOWS      (1 << 0)
+#define FLAG_SCROLL_WHEN_OVERFLOW  (1 << 1)
+
+
 // syn keyword Type pos_t upos_t scroll scroll_buffer
 
 typedef int16_t pos_t;
@@ -58,6 +62,8 @@ struct _sw {
 	// } console;
 
 	scroll scroll_mode;
+
+	uint8_t flags;
 
 	uint8_t *buffer;
 	uint8_t *buffer_end;

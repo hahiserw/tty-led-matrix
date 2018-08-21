@@ -107,14 +107,18 @@ void parse_letter(sw *csw, uint8_t c) {
 	// visible characters
 	if ((c >= 32 && c < 128) || wcbytes == 1) {
 		// scroll left if the text doesn't fit on the screen :D
-		// XXX make it configurable
-		// if (csw->cursor_x + FONT_WIDTH > csw->width) {
-		// 	csw->scroll_mode = SCROLL_LEFT;
-		// 	sw_scroll(csw, SCROLL_BUFFER_PRE_START); // won't work at first I think
-		// } else {
-		// 	csw->scroll_mode = NO_SCROLL;
-		// 	sw_scroll(csw, SCROLL_BUFFER_START);
-		// }
+		if (csw->flags & FLAG_SCROLL_WHEN_OVERFLOW) {
+			if (csw->cursor_x + FONT_WIDTH > csw->width) {
+				// don't scroll back every time a new character is added
+				if (csw->scroll_mode != SCROLL_LEFT) {
+					csw->scroll_mode = SCROLL_LEFT;
+					sw_scroll(csw, SCROLL_BUFFER_PRE_START); // won't work at first I think
+				}
+			} else {
+				csw->scroll_mode = NO_SCROLL;
+				sw_scroll(csw, SCROLL_BUFFER_START);
+			}
+		}
 
 #ifdef CONSOLE_DISCARD_EXCESIVE_CHARACTERS
 		if (csw->cursor_x + FONT_WIDTH > csw->buffer_width)

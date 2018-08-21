@@ -117,6 +117,7 @@ sw *sw_new(upos_t x, upos_t y,
 
 	nsw->scroll_mode   = scroll_mode;
 	nsw->font          = font;
+	nsw->flags         = 0 | FLAG_SCROLL_WHEN_OVERFLOW;
 
 	// nope...
 	// nsw->buffer = main_buffer + sw_counter * buffer_width * buffer_height / 8;
@@ -343,6 +344,28 @@ inline void sw_scroll_tick(void)
 		// case SCROLL_SPRITE:
 		// 	csw->offset_x += sprite_width;
 		// 	break;
+		}
+
+		if (csw->flags & FLAG_REPORT_OVERFLOWS) {
+#if 0
+			switch (csw->scroll_mode) {
+			case SCROLL_LEFT:
+			case SCROLL_RIGHT:
+				if (csw->offset_x == 0)
+					fprintf(&uart, "\e_%ia", sw_get_window_number(csw));
+				else if (csw->offset_x == -(pos_t)csw->width)
+					fprintf(&uart, "\e_%ib", sw_get_window_number(csw));
+				else if (csw->offset_x == csw->cursor_x)
+					fprintf(&uart, "\e_%ic", sw_get_window_number(csw));
+				break;
+
+			case SCROLL_UP:
+			case SCROLL_DOWN:
+				if (csw->offset_y == 0)
+					fprintf(&uart, "\e_%id", sw_get_window_number(csw));
+				break;
+			}
+#endif
 		}
 	}
 }
