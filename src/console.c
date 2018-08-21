@@ -223,8 +223,7 @@ void parse_letter(sw *csw, uint8_t c) {
 			csw->font = csw->font->next;
 		else
 			csw->font = font_first;
-		// temp, should be screen_clear(csw) or sth
-		parse_letter(csw, KEY_CTRL('L'));
+		sw_reset(csw);
 		break;
 
 		// cycle through windows
@@ -300,13 +299,7 @@ void parse_letter(sw *csw, uint8_t c) {
 		break;
 
 	case '\f': // ^L
-		// TODO screen_clear(csw);
-#define WINDOW_BUFFER_SIZE(csw) \
-		(csw->buffer_width * csw->buffer_height / 8)
-		memset(csw->buffer, 0, WINDOW_BUFFER_SIZE(csw));
-		// TODO console_cursor_move(0, 0);
-		csw->cursor_x = 0;
-		csw->cursor_y = 0;
+		sw_reset(csw);
 		break;
 	}
 

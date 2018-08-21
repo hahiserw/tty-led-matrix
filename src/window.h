@@ -71,6 +71,9 @@ extern uint8_t sw_counter;
 extern sw *sw_next[10];
 
 sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll, font_t *font);
+void sw_clear_buffer(sw *csw);
+void sw_reset(sw *csw);
+void sw_reset_all(void);
 int8_t sw_build_next_window_table(void);
 
 void sw_scroll(sw *csw, scroll_buffer position);

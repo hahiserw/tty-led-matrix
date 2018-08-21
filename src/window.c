@@ -140,6 +140,38 @@ void sw_del(sw *dsw)
 {
 	// main_buffer_end -= dsw->buffer_width * dsw->buffer_height / 8;
 	dsw->width = 0;
+
+}
+
+void sw_clear_buffer(sw *csw)
+{
+	memset(csw->buffer, 0, WINDOW_BUFFER_SIZE(csw));
+}
+
+void sw_reset(sw *csw)
+{
+	sw_clear_buffer(csw);
+	// memset(csw, 0, sizeof(sw));
+
+	// TODO console_cursor_move(0, 0);
+	csw->cursor_x = 0;
+	csw->cursor_y = 0;
+}
+
+void sw_reset_all(void)
+{
+	// for (uint8_t i = sw_counter - 1; i - 1; i--) {
+	// 	sw *csw = &sw_set[i];
+	// }
+
+	FOREACH_WINDOW(csw, cswi) {
+		if (cswi == 0)
+			continue;
+
+		sw_reset(csw);
+	}
+
+	sw_counter = 1;
 }
 
 
