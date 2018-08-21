@@ -43,5 +43,7 @@ typedef struct _font_t font_t;
 
 map_cell_t font_map(font_t *font, map_cell_t code);
 
+extern font_t *font_first;
+
 
 #endif

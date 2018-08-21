@@ -23,6 +23,8 @@
 uint8_t main_buffer[2048] = {0};
 uint8_t main_window = 1;
 
+font_t *font_first;
+
 #if 0
 void scroll(void) {
 // #define columns DISPLAY_WIDTH
@@ -104,6 +106,8 @@ sw *root_window;
 int main(void)
 {
 	hardware_init();
+
+	font_first = &font0;
 
 	root_window = sw_new(0, 0,
 						 DISPLAY_WIDTH, DISPLAY_HEIGHT,
