@@ -17,6 +17,8 @@
 #define DISPLAY_HEIGHT         DISPLAY_MODULE_HEIGHT
 #define DISPLAY_SIZE           (DISPLAY_WIDTH_BYTES * DISPLAY_HEIGHT)
 
+#define BUFFER_MULTIPLIER 3
+
 
 #define SPI_IFACE
 
@@ -72,6 +74,7 @@ extern FILE uart;
 extern sw *root_window;
 
 extern uint8_t main_window;
+void window_select(uint8_t number);
 
 void die(void);
 

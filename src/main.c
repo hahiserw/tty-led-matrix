@@ -16,11 +16,11 @@
 #include "screen.h"
 #include "font.h"
 
+#include "../fonts/ter-u16b.c"
 #include "../fonts/5x8.c"
-// #include "../fonts/ter-u16b.c"
 
 // 2 out of 2.5KB on atmega32u4
-uint8_t main_buffer[2048] = {0};
+uint8_t main_buffer[DISPLAY_SIZE * BUFFER_MULTIPLIER] = {0};
 uint8_t main_window = 1;
 
 font_t *font_first;
@@ -103,6 +103,15 @@ void hardware_init(void) {
 
 sw *root_window;
 
+// where to put it?
+void window_select(uint8_t number)
+{
+	if (number + 1 < sw_counter)
+		main_window = number + 1;
+	else
+		main_window = 1;
+}
+
 int main(void)
 {
 	hardware_init();
@@ -111,86 +120,16 @@ int main(void)
 
 	root_window = sw_new(0, 0,
 						 DISPLAY_WIDTH, DISPLAY_HEIGHT,
-						 0, 0,
-						 NO_SCROLL,
-						 &font0);
+						 0, 0);
 
 	root_window->next = sw_next;
 
-#define LAYOUT_FULL 0
-#define LAYOUT_SPLIT_VERTICALY 1
-#define LAYOUT_SPLIT_SIDEWAY_T 2
-#define LAYOUT_MEM 3
-
-// #define LAYOUT LAYOUT_FULL
-// #define LAYOUT LAYOUT_SPLIT_VERTICALY
-#define LAYOUT LAYOUT_SPLIT_SIDEWAY_T
-// #define LAYOUT LAYOUT_MEM
-
-#if LAYOUT == LAYOUT_MEM
+	// initial layout (manually for now; todo write a function for that)
 	sw *csw = sw_new(0, 0,
 					 DISPLAY_WIDTH, DISPLAY_HEIGHT,
-					 DISPLAY_WIDTH, DISPLAY_HEIGHT,
-					 NO_SCROLL,
-					 &font0);
-	sw_sorted[0] = csw;
-
-	// 0x0000..0x001f 32 registers
-	// 0x0020..0x005f I/O registers
-	// 0x0060..0x00ff ext I/O registers
-	// 0x0100..0x0aff internal sram
-	sw_sorted[0]->buffer = *(uint8_t *)0x0000;
-#endif
-
-#if LAYOUT == LAYOUT_FULL
-	sw *csw = sw_new(0, 0,
-					 DISPLAY_WIDTH, DISPLAY_HEIGHT,
-					 DISPLAY_WIDTH * 4, DISPLAY_HEIGHT,
-					 NO_SCROLL);
+					 DISPLAY_WIDTH * BUFFER_MULTIPLIER, DISPLAY_HEIGHT);
 
 	sw_sorted[0] = csw;
-#elif LAYOUT == LAYOUT_SPLIT_VERTICALY
-	sw_sorted[0] = sw_new(0, 0,
-					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL,
-					 &font0);
-
-	sw_sorted[1] = sw_new(0, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL,
-					 &font0);
-
-	sw *csw = sw_sorted[0];
-#elif LAYOUT == LAYOUT_SPLIT_SIDEWAY_T
-	sw_sorted[0] = sw_new(0, 0,
-					 DISPLAY_WIDTH / 8, DISPLAY_HEIGHT,
-					 DISPLAY_WIDTH * 4 / 8, DISPLAY_HEIGHT,
-					 NO_SCROLL,
-					 // &font1);
-					 &font0);
-
-	sw_sorted[1] = sw_new(DISPLAY_WIDTH * 1 / 8, 0,
-					 DISPLAY_WIDTH * 6 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4 * 6 / 8, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL,
-					 &font0);
-
-	sw_sorted[2] = sw_new(DISPLAY_WIDTH * 1 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 6 / 8, DISPLAY_HEIGHT / 2,
-					 DISPLAY_WIDTH * 4 * 6 / 8, DISPLAY_HEIGHT / 2,
-					 NO_SCROLL,
-					 &font0);
-
-	sw_sorted[3] = sw_new(DISPLAY_WIDTH * 7 / 8, 0,
-					 DISPLAY_WIDTH / 8, DISPLAY_HEIGHT,
-					 DISPLAY_WIDTH * 4 / 8, DISPLAY_HEIGHT,
-					 NO_SCROLL,
-					 &font0);
-
-	sw *csw = sw_sorted[0];
-#endif
 
 	// add static assertion?
 	if (csw == NULL)
@@ -200,8 +139,6 @@ int main(void)
 	// data to output next
 	if (sw_build_next_window_table() < 0)
 		die();
-
-	// sw_scroll(csw, SCROLL_BUFFER_START); // show data immediately
 
 // #define FONT_TEST
 // #define WELCOME_TEXT
@@ -256,7 +193,7 @@ int main(void)
 #endif
 
 #ifdef VERT_T_TEST
-	draw_text(sw_sorted[0], ":D\n:D");
+	draw_text(sw_sorted[0], ":D");
 	draw_text(sw_sorted[1], "„Zakaz wędzonej kiełbasy mnie rozjusza”");
 	draw_text(sw_sorted[2], "-- Wojciech Cejrowski");
 	draw_text(sw_sorted[3], ":D\n:D");

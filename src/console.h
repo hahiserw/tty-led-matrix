@@ -13,6 +13,15 @@
 	((v) - 'a' + 0x01))
 
 
+enum {
+	CONSOLE_MODE_DEFAULT,
+	CONSOLE_MODE_ESCAPE_SEQUENCE,
+};
+
+pos_t console_tailor_arg(pos_t arg, pos_t default_value, pos_t multiplier, pos_t max);
+
+
+void parse_escape_sequence(sw *csw, uint8_t c);
 void parse_letter(sw *csw, uint8_t c);
 void parse_new_line(sw *csw);
 

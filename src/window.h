@@ -21,7 +21,7 @@ typedef int16_t pos_t;
 typedef uint16_t upos_t;
 
 typedef enum {
-	NO_SCROLL = 0,
+	NO_SCROLL = 0, SCROLL_NONE = 0,
 	SCROLL_LEFT,
 	SCROLL_RIGHT,
 	SCROLL_UP,
@@ -29,11 +29,11 @@ typedef enum {
 } scroll;
 
 typedef enum {
-	SCROLL_BUFFER_START,
 	SCROLL_BUFFER_PRE_START,
+	SCROLL_BUFFER_START,
 	SCROLL_BUFFER_DATA_END,
-	SCROLL_BUFFER_START_VERT,
 	SCROLL_BUFFER_PRE_START_VERT,
+	SCROLL_BUFFER_START_VERT,
 	SCROLL_BUFFER_DATA_END_VERT,
 } scroll_buffer; // todo rename to scroll_position?
 
@@ -76,7 +76,7 @@ extern uint8_t sw_counter;
 
 extern sw *sw_next[10];
 
-sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t, scroll, font_t *font);
+sw *sw_new(upos_t, upos_t, upos_t, upos_t, upos_t, upos_t);
 void sw_clear_buffer(sw *csw);
 void sw_reset(sw *csw);
 void sw_reset_all(void);
@@ -103,6 +103,9 @@ static inline sw *get_next_window(sw *csw, upos_t y)
 
 	return NULL;
 }
+
+#define WINDOW_BUFFER_SIZE(csw) \
+		(csw->buffer_width * csw->buffer_height / 8)
 
 // #define NEW_FOREACH
 

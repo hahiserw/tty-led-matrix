@@ -85,9 +85,7 @@ sw *sw_sorted[SW_MAX_COUNT];
 
 sw *sw_new(upos_t x, upos_t y,
 		   upos_t width, upos_t height,
-		   upos_t buffer_width, upos_t buffer_height,
-		   scroll scroll_mode,
-		   font_t *font)
+		   upos_t buffer_width, upos_t buffer_height)
 {
 	if (sw_counter + 1 >= SW_MAX_COUNT)
 		return NULL;
@@ -95,7 +93,8 @@ sw *sw_new(upos_t x, upos_t y,
 	sw *nsw = &sw_set[sw_counter];
 
 	if (width == 0 || height == 0
-		|| x + width > DISPLAY_WIDTH || y + height > DISPLAY_HEIGHT)
+		|| x + width > DISPLAY_WIDTH || y + height > DISPLAY_HEIGHT
+		|| (width % 8 != 0))
 		return NULL;
 
 	// TODO also check if there's enough of buffer left
@@ -112,9 +111,9 @@ sw *sw_new(upos_t x, upos_t y,
 	nsw->cursor_x      = 0;
 	nsw->cursor_y      = 0;
 
-	nsw->scroll_mode   = scroll_mode;
-	nsw->font          = font;
 	nsw->flags         = 0 | FLAG_SCROLL_WHEN_OVERFLOW;
+	nsw->scroll_mode   = NO_SCROLL;
+	nsw->font          = font_first;
 
 	// nope...
 	// nsw->buffer = main_buffer + sw_counter * buffer_width * buffer_height / 8;
