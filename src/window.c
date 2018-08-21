@@ -83,10 +83,6 @@ uint8_t sw_counter;
 sw sw_set[SW_MAX_COUNT];
 sw *sw_sorted[SW_MAX_COUNT];
 
-// void sw_clear(sw *csw)
-// {
-// }
-
 sw *sw_new(upos_t x, upos_t y,
 		   upos_t width, upos_t height,
 		   upos_t buffer_width, upos_t buffer_height,
@@ -228,6 +224,18 @@ int8_t sw_build_next_window_table(void)
 
 	return n - sw_next;
 }
+
+#if 0
+int8_t sw_get_window_number(sw *csw)
+{
+	FOREACH_WINDOW(isw, iswi) {
+		if (csw == isw)
+			return iswi;
+	}
+
+	return -1;
+}
+#endif
 
 // x macros?
 inline void sw_scroll(sw *csw, scroll_buffer position)
