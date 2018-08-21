@@ -217,6 +217,17 @@ void parse_letter(sw *csw, uint8_t c) {
 		fprintf(&uart, "\r\n");
 		break;
 
+		// cycle through font
+	case KEY_CTRL('G'):
+		if (csw->font->next->next)
+			csw->font = csw->font->next;
+		else
+			csw->font = font_first;
+		// temp, should be screen_clear(csw) or sth
+		parse_letter(csw, KEY_CTRL('L'));
+		break;
+
+		// cycle through windows
 	case KEY_CTRL('O'):
 		// skip root window
 		if (main_window + 1 < sw_counter)
