@@ -4,10 +4,16 @@
 - handling of escape sequences (in progress)
 - drawing images with base64 (not yet)
 
-## Youtube demos
+## Demos
 
-- [Split scrolling demo](https://youtu.be/6Mvoc2WfrNE)
-- [Vertical scrolling and scrolling speed demo](https://youtu.be/mPno4U57v9A)
+Split scrolling demo
+
+[![Split scrolling demo](http://img.youtube.com/vi/6Mvoc2WfrNE/0.jpg)](http://www.youtube.com/watch?v=6Mvoc2WfrNE)
+
+Vertical scrolling and scrolling speed demo
+
+[![Vertical scrolling and scrolling speed demo](http://img.youtube.com/vi/mPno4U57v9A/0.jpg)](http://www.youtube.com/watch?v=mPno4U57v9A)
+
 
 ### TODO
 - [X] FIXME scrolling offsets / displaying data
