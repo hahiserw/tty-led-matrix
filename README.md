@@ -4,7 +4,7 @@
 - handling of escape sequences (in progress)
 - drawing images with base64 (not yet)
 
-## Demos
+## Youtube demos
 
 Split scrolling demo
 
