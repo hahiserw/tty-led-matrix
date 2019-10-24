@@ -4,6 +4,11 @@
 - handling of escape sequences (in progress)
 - drawing images with base64 (not yet)
 
+## Youtube demos
+
+- [Split scrolling demo](https://youtu.be/6Mvoc2WfrNE)
+- [Vertical scrolling and scrolling speed demo](https://youtu.be/mPno4U57v9A)
+
 ### TODO
 - [X] FIXME scrolling offsets / displaying data
 - [ ] scan() should be called by an interrupt, so leds won't blink when receiving data?
