@@ -1,6 +1,6 @@
 ## Features
 - unicode (see the font in console.c for all available glyphs)
-- multiple scrolling windows displayed simultanuously
+- multiple scrolling windows displayed simultaneously
 - handling of escape sequences (in progress)
 - drawing images with base64 (not yet)
 
